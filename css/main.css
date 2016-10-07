@@ -1,0 +1,11 @@
+.building {
+    margin-top: 200px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.elevator {
+    min-width: 50px;
+    max-width: 200px;
+    border: 1px solid blue;
+}

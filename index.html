@@ -9,8 +9,11 @@
 <body ng-app="elevatorApp">
   <div ng-controller="mainControl">
 
-
-
+    <div class="building">
+      <div class="elevator" ng-repeat="elevator in elevatorQty">
+        <elevator elevator-width="elevatorWidth"></elevator>
+      </div>
+    </div>
 
 
 
