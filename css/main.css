@@ -13,9 +13,17 @@
     text-align: center;
     position: relative;
     border: 1px solid red;
-    transition: top 1s;
-    width: 50px;
+    width: 75px;
     box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.elevator::-webkit-scrollbar {
+    width: 0;
+}
+
+.elevatorInside {
+    display: block;
 }
 
 .elevatorShaft {

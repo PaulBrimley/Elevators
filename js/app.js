@@ -9,6 +9,7 @@ app.controller('mainControl', function ($scope, $timeout) {
 
     $scope.peopleEnter = 0;
     $scope.peopleQty = 0;
+    $scope.personCounter = 0;
 
     $scope.buildingObj = {
         elevators: {},
@@ -47,12 +48,22 @@ app.controller('mainControl', function ($scope, $timeout) {
     $timeout(function () {
        $scope.buildingHeight = $('.floorHolder').height();
     });
-    $scope.loadPeople = function (floorIndex, elevatorIndex, peopleEnter) {
-        if (peopleEnter) {
-            $scope.buildingObj['elevator' + elevatorIndex]['floor' + floorIndex].people.push({
-
+    $scope.loadPeople = function (floorIndex) {
+        if ($scope.buildingObj.floors['floor' + floorIndex].peopleQty) {
+            $scope.buildingObj.floors['floor' + floorIndex].elevators.map(function (elevator) {
+                for (var prop in $scope.buildingObj.elevators) {
+                    if (prop === elevator) {
+                        for (var i = 0; i < $scope.buildingObj.floors['floor' + floorIndex].peopleQty; i++) {
+                            $scope.buildingObj.elevators[prop].people.push({
+                                personId: 'person' +  $scope.personCounter
+                            })
+                            $scope.personCounter++;
+                        }
+                    }
+                    break;
+                }
             });
-            $scope.buildingObj['elevator' + elevatorIndex]['floor' + floorIndex].elevatorLoaded = true;
+            $scope.buildingObj.floors['floor' + floorIndex].elevatorLoaded = true;
         } else {
             alert('Please enter a person quantity greater than 0.');
         }
@@ -64,8 +75,8 @@ app.controller('mainControl', function ($scope, $timeout) {
 
     $scope.summonElevator = function (floorIndex) {
         for (var prop in $scope.buildingObj.elevators) {
-            if ($scope.buildingObj.elevators[prop].people.length === 0) {
-                console.log($scope.buildingObj.floors['floor' + $scope.buildingObj.elevators[prop].currentFloor].elevators);
+            if ($scope.buildingObj.elevators[prop].people.length === 0 && $scope.buildingObj.elevators[prop].tripCounter < 100) {
+                console.log('here');
                 for (var i = $scope.buildingObj.floors['floor' + $scope.buildingObj.elevators[prop].currentFloor].elevators.length - 1; i >= 0; i--) {
                     if ($scope.buildingObj.floors['floor' + $scope.buildingObj.elevators[prop].currentFloor].elevators[i] === $scope.buildingObj.elevators[prop].elevatorId) {
                         console.log('splicing', $scope.buildingObj.elevators[prop].elevatorId);
@@ -73,18 +84,30 @@ app.controller('mainControl', function ($scope, $timeout) {
                         console.log($scope.buildingObj.floors['floor' + $scope.buildingObj.elevators[prop].currentFloor].elevators)
                     }
                 }
-
                 $scope.buildingObj.elevators[prop].currentFloor = floorIndex;
-            } else if (($scope.buildingObj.elevators[prop].direction === 'down' && $scope.buildingObj.elevators[prop].destinationFloor >= floorIndex) || ($scope.buildingObj.elevators[prop].direction === 'up' && $scope.buildingObj.elevators[prop].destinationFloor <= floorIndex)) {
+                $scope.buildingObj.elevators[prop].tripCounter++;
+                $scope.buildingObj.floors['floor' + floorIndex].elevators.push($scope.buildingObj.elevators[prop].elevatorId);
+                break;
+            } else if (($scope.buildingObj.elevators[prop].direction === 'down' && $scope.buildingObj.elevators[prop].destinationFloor >= floorIndex) || ($scope.buildingObj.elevators[prop].direction === 'up' && $scope.buildingObj.elevators[prop].destinationFloor <= floorIndex) && $scope.buildingObj.elevators[prop].tripCounter < 100) {
+                console.log('here');
+                for (var i = $scope.buildingObj.floors['floor' + $scope.buildingObj.elevators[prop].currentFloor].elevators.length - 1; i >= 0; i--) {
+                    if ($scope.buildingObj.floors['floor' + $scope.buildingObj.elevators[prop].currentFloor].elevators[i] === $scope.buildingObj.elevators[prop].elevatorId) {
+                        console.log('splicing', $scope.buildingObj.elevators[prop].elevatorId);
+                        $scope.buildingObj.floors['floor' + $scope.buildingObj.elevators[prop].currentFloor].elevators.splice(i, 1);
+                        console.log($scope.buildingObj.floors['floor' + $scope.buildingObj.elevators[prop].currentFloor].elevators)
+                    }
+                }
                 $scope.buildingObj.elevators[prop].currentFloor = floorIndex;
+                $scope.buildingObj.elevators[prop].tripCounter++;
+                $scope.buildingObj.floors['floor' + floorIndex].elevators.push($scope.buildingObj.elevators[prop].elevatorId);
+                break;
             }
-            $scope.buildingObj.floors['floor' + floorIndex].elevators.push($scope.buildingObj.elevators[prop].elevatorId);
-            break;
+
+
         }
         for (var prop in $scope.buildingObj.floors) {
             console.log(prop, $scope.buildingObj.floors[prop].elevators.length);
             if ($scope.buildingObj.floors[prop].elevators.length === 0) {
-                console.log('here', prop);
                 $scope.buildingObj.floors[prop].elevatorHere = false;
             } else {
                 $scope.buildingObj.floors[prop].elevatorHere = true;
@@ -98,7 +121,8 @@ app.directive('elevator', function () {
         scope: {
             buildingHeight: '=',
             elevatorPosition: '=',
-            floorQty: '='
+            floorQty: '=',
+            people: '='
         },
         templateUrl: '../views/elevator.html',
         link: function (scope, elem, attr) {
@@ -117,6 +141,7 @@ app.directive('elevator', function () {
                 }
             });
             scope.$watch('elevatorPosition', function (newVal, oldVal) {
+                console.log(newVal);
                if (scope.buildingHeight && scope.floorQty) {
                    var height = scope.buildingHeight / scope.floorQty;
                    elem.css({top: newVal * height});
