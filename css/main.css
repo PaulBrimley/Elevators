@@ -1,12 +1,27 @@
 .building {
+    display: flex;
+    border: 1px solid blue;
+}
+.buildingHolder {
     margin-top: 200px;
     display: flex;
+    justify-content: center;
+
 }
 
 .elevator {
+    text-align: center;
+    position: relative;
+    border: 1px solid red;
+    transition: top 1s;
+    width: 50px;
+    box-sizing: border-box;
+}
+
+.elevatorShaft {
     display: flex;
-    border: 1px solid blue;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .floors {
@@ -19,6 +34,9 @@
 }
 
 .floorHolder {
-    margin-left: 5px;
-    border-left: 1px solid blue;
+
+}
+
+.floorInputHolder {
+    min-height: 20px;
 }

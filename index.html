@@ -9,29 +9,35 @@
 <body ng-app="elevatorApp">
   <div ng-controller="mainControl">
 
-    <div class="building">
-      <div class="elevator" ng-repeat="elevator in elevatorQty">
-        <elevator elevator-position="buildingObj['elevator' + $index].currentFloor"></elevator>
+    <div class="buildingHolder">
+      <div class="building">
         <div class="floorHolder">
           <div class="floors" id="{{'floor' + $index}}" ng-repeat="floor in floorQty">
             <div>
-              Floor: {{$index + 1}}
+              Floor: {{floorQtyInput - $index}}
             </div>
-            <input ng-hide="buildingObj['elevator' + $parent.$index]['floor' + $index].elevatorLoaded" type="number" ng-model="buildingObj['elevator' + $parent.$index]['floor' + $index].peopleQty" placeholder="Enter people quantity" min="1">
-            <input ng-show="buildingObj['elevator' + $parent.$index]['floor' + $index].elevatorLoaded" type="number" ng-model="buildingObj['elevator' + $parent.$index]['floor' + $index].floorDestination" placeholder="Enter floor destination">
+            <div class="floorInputHolder">
+              <input ng-show="buildingObj.floors['floor' + $index].elevatorHere && !buildingObj.floors['floor' + $index].elevatorLoaded" type="number" ng-model="buildingObj['elevator' + $parent.$index]['floor' + $index].peopleQty" placeholder="Enter people quantity" min="1">
+              <input ng-show="buildingObj.floors['floor' + $index].elevatorHere && buildingObj.floors['floor' + $index].elevatorLoaded" type="number" ng-model="buildingObj['elevator' + $parent.$index]['floor' + $index].floorDestination" placeholder="Enter floor destination">
+            </div>
+
             <div ng-hide="buildingObj['elevator' + $parent.$index]['floor' + $index].elevatorLoaded">
               <button>
-                <span ng-hide="buildingObj['elevator' + $parent.$index]['floor' + $index].elevatorHere" ng-click="summonElevator($index, $parent.$index, buildingObj['elevator' + $parent.$index]['floor' + $index].peopleQty)">Summon</span>
-                <span ng-show="buildingObj['elevator' + $parent.$index]['floor' + $index].elevatorHere" ng-click="loadPeople($index, $parent.$index, buildingObj['elevator' + $parent.$index]['floor' + $index].peopleQty)">Load People</span>
+                <span ng-hide="buildingObj.floors['floor' + $index].elevatorHere" ng-click="summonElevator($index)">Summon</span>
+                <span ng-show="buildingObj.floors['floor' + $index].elevatorHere" ng-click="loadPeople($index, $parent.$index, buildingObj['elevator' + $parent.$index]['floor' + $index].peopleQty)">Load People</span>
               </button>
             </div>
-            <div ng-show="buildingObj['elevator' + $parent.$index]['floor' + $index].elevatorLoaded">
+            <div ng-show="buildingObj.floors['floor' + $index].elevatorLoaded">
               <button>
                 <span ng-click="sendElevator($index, $parent.$index, buildingObj['elevator' + $parent.$index]['floor' + $index].peopleQty)">Send Elevator</span>
               </button>
             </div>
             <hr ng-show="$index < floorQtyInput - 1">
           </div>
+        </div>
+        <div class="elevatorShaft" ng-repeat="elevator in elevatorQty">
+          <elevator class="elevator" building-height="buildingHeight" elevator-position="buildingObj.elevators['elevator' + $index].currentFloor" floor-qty="floorQtyInput"></elevator>
+
         </div>
       </div>
     </div>
