@@ -1,12 +1,8 @@
 .building {
     display: flex;
-    border: 1px solid blue;
 }
 .buildingHolder {
     margin-top: 200px;
-    display: flex;
-    justify-content: center;
-
 }
 
 .elevator {
@@ -28,7 +24,6 @@
 
 .elevatorShaft {
     display: flex;
-    margin: 0 auto;
     box-sizing: border-box;
 }
 
